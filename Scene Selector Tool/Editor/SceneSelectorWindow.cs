@@ -101,6 +101,7 @@ namespace RV_SceneSelectorTool.Editor
             SetupReorderableList();
             LoadHistory();
             LoadFavorites();
+            ValidateHistoryAndFavorites();
             LoadFavoriteHotkeys();
         }
 
@@ -233,6 +234,25 @@ namespace RV_SceneSelectorTool.Editor
         #endregion
 
         #region Hotkeys for Favorites
+        
+        private void ValidateHistoryAndFavorites()
+        {
+            List<string> validHistory = sceneHistory.Where(scene => allScenePaths.Contains(scene)).ToList();
+            if (validHistory.Count != sceneHistory.Count)
+            {
+                sceneHistory.Clear();
+                sceneHistory.AddRange(validHistory);
+                SaveHistory();
+            }
+           
+            List<string> validFavorites = favorites.Where(scene => allScenePaths.Contains(scene)).ToList();
+            if (validFavorites.Count != favorites.Count)
+            {
+                favorites.Clear();
+                favorites.AddRange(validFavorites);
+                SaveFavorites();
+            }
+        }
         private void LoadFavoriteHotkeys()
         {
             favoriteHotkeys.Clear();
@@ -1110,7 +1130,7 @@ namespace RV_SceneSelectorTool.Editor
                             Scene loadedScene = SceneManager.GetSceneByPath(scenePath);
                             if (loadedScene.isLoaded && !loadedScene.Equals(SceneManager.GetActiveScene()))
                             {
-                                if (GUILayout.Button("Close Additive", GUILayout.Width(90)))
+                                if (GUILayout.Button("Close Additive", GUILayout.Width(110)))
                                 {
                                     EditorSceneManager.CloseScene(loadedScene, true);
                                 }
